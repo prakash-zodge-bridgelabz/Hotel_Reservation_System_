@@ -20,6 +20,12 @@ package com.bridgelabz;
 // - I/P – 10Sep2020, 11Sep2020
 // - O/P – Lakewood, Total Rates: $220
 
+// Use case 3 :
+// Ability to add weekday and weekend rates for each Hotel
+// - For Lakewood Weekday & Weekend Rates per day is $110 & $90
+// - For Bridgewood $150 and $50
+// - For Ridgewood $220 and $150
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -37,10 +43,11 @@ interface Hotel_Requirements{
     int getTotalHotelsCreated();
     String findCheapestHotel(String fromDate,String toDate) throws ParseException;
     void setAllHotels(ArrayList<Hotel> allHotels);
+    void setWeekdayAndWeekendRate(String hotelName,int weekdayRate, int weekendRate);
 }
 class Hotel implements  Hotel_Requirements{
     String hotelName;
-    int regularRatesForCustomer;
+    int regularRatesForCustomer, weekendRate, weekdayRate;
     static ArrayList<Hotel> allHotels= new ArrayList<>();       //For storing all hotels
     public void setAllHotels(ArrayList<Hotel> allHotels){
         this.allHotels = allHotels;
@@ -54,38 +61,104 @@ class Hotel implements  Hotel_Requirements{
         this.regularRatesForCustomer = regularRatesForCustomer;
         totalHotelsCreated++;
     }
+
+    public void setWeekdayAndWeekendRate(String hotelName,int weekdayRate, int weekendRate){
+        // Iterate over the ArrayList and set the value of the element with the name "element2" to "new value"
+        for (int i = 0; i < allHotels.size(); i++) {
+            if (allHotels.get(i).hotelName.equals(hotelName)) {
+                allHotels.get(i).weekdayRate = weekdayRate;
+                allHotels.get(i).weekendRate = weekendRate;
+            }
+        }
+    }
     public String getHotelName()            {   return hotelName;               }
     public int getRegularRatesForCustomer() {   return regularRatesForCustomer; }
     public int getTotalHotelsCreated()      {   return totalHotelsCreated;      }
     static long totalDays;
-    public String findCheapestHotel(String fromDate,String toDate) throws ParseException {
-        totalDays = countDays(fromDate,toDate);
-        // Use case 2 : Weekday's only -> Assuming firstDay and lastDay are weekday's
-        //Iterate over all hotels and calculate price accordingly
-        if (allHotels.size() > 0) {
-            int best = 0;
-            int i  = 1;
-            while (i < allHotels.size()) {
+    String firstDay,lastDay,day;
+    String getDay(String strDate)throws ParseException {
 
-                double cost = allHotels.get(i).getPrice();
-                if (cost < allHotels.get(best).getPrice()) {        // Finding the cheapest hotel
-                    best = i;       // Storing index of arraylist which is cheapest
-                }
-                i++;
+        try {
+            String inputDate = strDate.replace("sep","sept");     //Throws error --> if we provide "sep" so replaced with "sept"
+            SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMMyyyy");
+            Date date = dateFormat.parse(inputDate);
+            SimpleDateFormat DayOfWeek = new SimpleDateFormat("EEEE");
+            day = DayOfWeek.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return day;
+    }
+    static int firstWeekendCount=0,lastWeekendCount=0,firstWeekdayCount=0,lastWeekdayCount=0;
+    int price,lakewoodPrice,bridgewoodPrice,ridgewoodPrice;
+    public String findCheapestHotel(String fromDate,String toDate) throws ParseException {
+        //Check whether dates are weekend or weekday
+        //if date is weekend --> weekend++
+        //else --> Weekday++
+        //Parse date into day
+        firstDay = getDay(fromDate);       //call getDay and pass one date
+        lastDay = getDay(toDate);
+        if(firstDay == "Saturday" || firstDay == "Sunday") {
+            firstWeekendCount++;
+        } else{
+            firstWeekdayCount++;
+        }
+        if(lastDay == "Saturday" || lastDay == "Sunday") {
+            lastWeekendCount++;
+        } else{
+            lastWeekdayCount++;
+        }
+        //Counting days`
+        totalDays = countDays(fromDate,toDate);
+        //Iterate over all hotels and calculate price accordingly
+        for(int i=0; i<allHotels.size();i++){
+            if(allHotels.get(i).hotelName == "Lakewood") {
+                lakewoodPrice = allHotels.get(i).getPrice();
+            } else if (allHotels.get(i).hotelName == "Bridgewood") {
+                bridgewoodPrice = allHotels.get(i).getPrice();
+            } else if(allHotels.get(i).hotelName == "Ridgewood"){
+                ridgewoodPrice = allHotels.get(i).getPrice();
             }
-            return allHotels.get(best).hotelName+", Total Rates: $"+allHotels.get(best).getPrice();
-        } else {
-            return "Hotel list is empty";
+            else {
+                System.out.println("Hotel not found");
+            }
+        }
+        //Finding cheapest hotel
+        if(lakewoodPrice < bridgewoodPrice && lakewoodPrice < ridgewoodPrice){
+            return "Lakewood, Total Rates: $"+lakewoodPrice;
+        }
+        else if(bridgewoodPrice < lakewoodPrice && bridgewoodPrice < ridgewoodPrice){
+            return "Bridgewood, Total Rates: $"+bridgewoodPrice;
+        }
+        else if(ridgewoodPrice < lakewoodPrice && ridgewoodPrice < bridgewoodPrice){
+            return "Ridgewood, Total Rates: $"+ridgewoodPrice;
+        }
+        else if(lakewoodPrice == bridgewoodPrice){
+            return "Lakewood and Bridgewood, Total Rates: $"+lakewoodPrice;
+        }
+        else if(bridgewoodPrice == ridgewoodPrice) {
+            return "Bridgewood and Ridgewood, Total Rates: $"+bridgewoodPrice;
+        }
+        else{       // lakewoodPrice == ridgewoodPrice
+            return "Lakewood and Ridgewood, Total Rates: $"+lakewoodPrice;
         }
     }
-    int getPrice() throws ParseException {
-        // Counting total days
-        int price=0;
+    int getPrice() throws ParseException {  //
         if(totalDays <= 0){
             // do nothing
-        }
-        else{
-            price += regularRatesForCustomer * totalDays;
+        } else{        //firstWeekdayCount      firstWeekendCount      lastWeekdayCount    lastWeekendCount
+            if(firstWeekdayCount >= 1){  //weekendRate   weekDayRate
+                price += weekdayRate * firstWeekdayCount;
+            }
+            if(firstWeekendCount >= 1){
+                price += weekendRate * firstWeekendCount;
+            }
+            if(lastWeekdayCount >= 1){
+                price += weekdayRate * lastWeekdayCount;
+            }
+            if(lastWeekendCount >= 1){
+                price += weekendRate * lastWeekendCount;
+            }
         }
         return price;
     }

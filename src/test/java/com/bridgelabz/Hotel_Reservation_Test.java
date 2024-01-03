@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Hotel_Reservation_Test {
     ArrayList<Hotel> allHotels;       //For storing all hotels
-    Hotel Lakewood,Bridgewood,Ridgewood;
+    Hotel Lakewood,Bridgewood,Ridgewood,h;
     @Before
     public void init(){
         allHotels= new ArrayList<>();       //For storing all hotels
@@ -19,6 +19,8 @@ public class Hotel_Reservation_Test {
         allHotels.add(Lakewood);
         allHotels.add(Bridgewood);
         allHotels.add(Ridgewood);
+        h = new Hotel();
+        h.setAllHotels(allHotels);
     }
     // Use case 1, test case: Check count of hotels been created
     @Test
@@ -35,9 +37,21 @@ public class Hotel_Reservation_Test {
     // - O/P – Lakewood, Total Rates: $220
     @Test
     public void test_findCheapestHotel() throws ParseException {
-        Hotel h = new Hotel();
-        h.setAllHotels(allHotels);
         String actual = h.findCheapestHotel("10sep2020","11sep2020");
         Assert.assertEquals("Lakewood, Total Rates: $220",actual);
+    }
+
+    // Use case 3, test case :
+    // Ability to add weekday and weekend rates for each Hotel
+    // - For Lakewood Weekday & Weekend Rates per day is $110 & $90
+    // - For Bridgewood $150 and $50
+    // - For Ridgewood $220 and $150
+    @Test
+    public void test_useCase3_findCheapestHotel() throws ParseException {
+        h.setWeekdayAndWeekendRate("Lakewood",110,90);
+        h.setWeekdayAndWeekendRate("Bridgewood",150,50);
+        h.setWeekdayAndWeekendRate("Ridgewood",220,150);
+        // find cheapest hotels based on weekend and weekday
+        Assert.assertEquals("Lakewood, Total Rates: $220",h.findCheapestHotel("10sep2020","11sep2020"));
     }
 }
