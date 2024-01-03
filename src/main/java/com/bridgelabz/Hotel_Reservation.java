@@ -26,6 +26,11 @@ package com.bridgelabz;
 // - For Bridgewood $150 and $50
 // - For Ridgewood $220 and $150
 
+// Use case 4 :
+// Ability to find the cheapest Hotel for a given Date Range based on weekday and weekend
+// - I/P – 11Sep2020, 12Sep2020
+// - O/P – Lakewood and Bridgewood with Total Rates $200
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -134,13 +139,13 @@ class Hotel implements  Hotel_Requirements{
             return "Ridgewood, Total Rates: $"+ridgewoodPrice;
         }
         else if(lakewoodPrice == bridgewoodPrice){
-            return "Lakewood and Bridgewood, Total Rates: $"+lakewoodPrice;
+            return "Lakewood and Bridgewood with Total Rates: $"+lakewoodPrice;
         }
         else if(bridgewoodPrice == ridgewoodPrice) {
-            return "Bridgewood and Ridgewood, Total Rates: $"+bridgewoodPrice;
+            return "Bridgewood and Ridgewood with Total Rates: $"+bridgewoodPrice;
         }
         else{       // lakewoodPrice == ridgewoodPrice
-            return "Lakewood and Ridgewood, Total Rates: $"+lakewoodPrice;
+            return "Lakewood and Ridgewood with Total Rates: $"+lakewoodPrice;
         }
     }
     int getPrice() throws ParseException {  //
