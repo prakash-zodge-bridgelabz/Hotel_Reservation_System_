@@ -31,6 +31,10 @@ package com.bridgelabz;
 // - I/P – 11Sep2020, 12Sep2020
 // - O/P – Lakewood and Bridgewood with Total Rates $200
 
+// Use case 5 :
+// Ability to add ratings to each Hotel
+// - Lakewood is 3, Bridgewood is 4 and Ridgewood is 5
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -49,6 +53,8 @@ interface Hotel_Requirements{
     String findCheapestHotel(String fromDate,String toDate) throws ParseException;
     void setAllHotels(ArrayList<Hotel> allHotels);
     void setWeekdayAndWeekendRate(String hotelName,int weekdayRate, int weekendRate);
+    void setRatings(String hotelName, int ratings);
+    int getRatings(String hotelName);
 }
 class Hotel implements  Hotel_Requirements{
     String hotelName;
@@ -56,6 +62,9 @@ class Hotel implements  Hotel_Requirements{
     static ArrayList<Hotel> allHotels= new ArrayList<>();       //For storing all hotels
     public void setAllHotels(ArrayList<Hotel> allHotels){
         this.allHotels = allHotels;
+    }
+    ArrayList<Hotel> getAllHotels(){        //returns arraylist which contains all hotel details
+        return allHotels;
     }
     Hotel(){
         //For calling setAllHotels method
@@ -76,13 +85,30 @@ class Hotel implements  Hotel_Requirements{
             }
         }
     }
+    int ratings;
+    public void setRatings(String hotelName, int ratings){
+        // Iterate over the ArrayList and set the value of the element with the name "element2" to "new value"
+        for (int i = 0; i < allHotels.size(); i++) {
+            if (allHotels.get(i).hotelName.equals(hotelName)) {
+                allHotels.get(i).ratings = ratings;
+            }
+        }
+    }
+    int res=0;
+    public int getRatings(String hotelName){
+        for (int i = 0; i < allHotels.size(); i++) {
+            if (allHotels.get(i).hotelName.equals(hotelName)) {
+                res= allHotels.get(i).ratings;
+            }
+        }
+        return res;
+    }
     public String getHotelName()            {   return hotelName;               }
     public int getRegularRatesForCustomer() {   return regularRatesForCustomer; }
     public int getTotalHotelsCreated()      {   return totalHotelsCreated;      }
     static long totalDays;
     String firstDay,lastDay,day;
     String getDay(String strDate)throws ParseException {
-
         try {
             String inputDate = strDate.replace("sep","sept");     //Throws error --> if we provide "sep" so replaced with "sept"
             SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMMyyyy");
@@ -178,9 +204,15 @@ class Hotel implements  Hotel_Requirements{
         return daysBetween+1;
     }
     @Override
+//    public String toString() {
+//        return "Hotel Name : "+hotelName+
+//                "\nRegular Rates for Customer : ";
+//    }
     public String toString() {
         return "Hotel Name : "+hotelName+
-                "\nRegular Rates for Customer : ";
+                "\tWeekend Rate : "+weekendRate+
+                "\tWeekday Rate : "+weekdayRate+
+                "\tRatings : "+ratings;
     }
 }
 public class Hotel_Reservation {

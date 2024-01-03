@@ -65,4 +65,18 @@ public class Hotel_Reservation_Test {
         String expected = "Lakewood and Bridgewood with Total Rates $200";
         Assert.assertEquals(expected,h.findCheapestHotel("11sep2020","12sep2020"));
     }
+    // Use case 5, test case :
+    // Ability to add ratings to each Hotel
+    // - Lakewood is 3, Bridgewood is 4 and Ridgewood is 5
+    @Test
+    public void test_useCase5_setRatings() throws ParseException {
+        // Setting ratings
+        h.setRatings("Lakewood", 3);
+        h.setRatings("Bridgewood", 4);
+        h.setRatings("Ridgewood", 5);
+        // Checking ratings
+        Assert.assertEquals(3, h.getRatings("Lakewood"));
+        Assert.assertEquals(4,h.getRatings("Bridgewood"));
+        Assert.assertEquals(5,h.getRatings("Ridgewood"));
+    }
 }
