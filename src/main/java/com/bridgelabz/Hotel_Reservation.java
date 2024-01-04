@@ -5,15 +5,16 @@ package com.bridgelabz;
 // Rates --> Weekday
 // Rates --> Weekend (Saturday, Sunday)
 //                                     3 HOTEL's
-// Concepts       | Lakewood      |   Bridgelwood     |   Ridgewood
-// Ratings        |   3           |       4           |       5
-// WeekdayRate  $ |   110         |       150         |       220
-// WeekendRate  $ |   90          |       50          |       150
+// Concepts                     | Lakewood      |   Bridgelwood     |   Ridgewood
+// Ratings                      |   3           |       4           |       5
+// rewardCustomerWeekdayRate  $ |   80          |       110         |       100
+// rewardCustomerWeekendRate  $ |   80          |       50          |       40
 
-// Use case 7 :
-// Ability to find the Best Rated Hotel for a given Date Range
-// - I/P – 11Sep2020, 12Sep2020
-// - O/P – Ridgewood & Total Rates $370
+// Use case 9 :
+// Ability to add special rates for reward customers as a part of Loyalty Program
+// - For Lakewood for Reward Customer Weekday & Weekend Rates per day is $80 & $80
+// - For Bridgewood $110 and $50
+// - For Ridgewood $100 and $40
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,6 +32,8 @@ interface Hotel_Requirements{
     String findBestRatedHotel(String fromDate,String toDate) throws ParseException;
     void setAllHotels(ArrayList<Hotel> allHotels);
     int getRatings(String hotelName);
+    void setSpecialRatesForRewardCustomer(String hotelName,int rewardCustomerWeekdayRate,int rewardCustomerWeekendRate);
+    String getSpecialRatesForRewardCustomer(String hotelName);
 }
 class Hotel implements  Hotel_Requirements{
     String hotelName;
@@ -44,12 +47,31 @@ class Hotel implements  Hotel_Requirements{
     Hotel(){
         //For calling setAllHotels method
     }
-    int ratings,weekendRate, weekdayRate;
-    Hotel(String hotelName, int weekdayRate, int weekendRate, int ratings){
+    int ratings,rewardCustomerWeekendRate, rewardCustomerWeekdayRate;
+    Hotel(String hotelName, int rewardCustomerWeekdayRate, int rewardCustomerWeekendRate, int ratings){
         this.hotelName = hotelName;
-        this.weekdayRate = weekdayRate;
-        this.weekendRate = weekendRate;
+        this.rewardCustomerWeekdayRate = rewardCustomerWeekdayRate;
+        this.rewardCustomerWeekendRate = rewardCustomerWeekendRate;
         this.ratings = ratings;
+    }
+    // Ability to add special rates for reward customers as a part of Loyalty Program
+    public void setSpecialRatesForRewardCustomer(String hotelName,int rewardCustomerWeekdayRate,int rewardCustomerWeekendRate){
+        for(int i=0;i<allHotels.size();i++){
+            if(allHotels.get(i).hotelName.equals(hotelName)){
+                allHotels.get(i).rewardCustomerWeekdayRate=rewardCustomerWeekdayRate;
+                allHotels.get(i).rewardCustomerWeekendRate = rewardCustomerWeekendRate;
+            }
+        }
+    }
+    public String getSpecialRatesForRewardCustomer(String hotelName){
+        String txt="";
+        for(int i=0;i<allHotels.size();i++){
+            if(allHotels.get(i).hotelName == hotelName){
+                txt = "For "+allHotels.get(i).hotelName+" reward customer weekday rate is : $"+allHotels.get(i).rewardCustomerWeekdayRate+
+                        " and reward customer weekend rate is : $"+allHotels.get(i).rewardCustomerWeekendRate;
+            }
+        }
+        return txt;
     }
     int res=0;
     public int getRatings(String hotelName){
@@ -200,16 +222,16 @@ class Hotel implements  Hotel_Requirements{
     }
     int getPrice() throws ParseException {
         if(firstWeekdayCount >= 1){
-            price += weekdayRate * firstWeekdayCount;
+            price += rewardCustomerWeekdayRate * firstWeekdayCount;
         }
         if(firstWeekendCount >= 1){
-            price += weekendRate * firstWeekendCount;
+            price += rewardCustomerWeekendRate * firstWeekendCount;
         }
         if(lastWeekdayCount >= 1){
-            price += weekdayRate * lastWeekdayCount;
+            price += rewardCustomerWeekdayRate * lastWeekdayCount;
         }
         if(lastWeekendCount >= 1){
-            price += weekendRate * lastWeekendCount;
+            price += rewardCustomerWeekendRate * lastWeekendCount;
         }
         return price;
     }
@@ -226,8 +248,8 @@ class Hotel implements  Hotel_Requirements{
     @Override
     public String toString() {
         return "Hotel Name : "+hotelName+
-                "\tWeekend Rate : "+weekendRate+
-                "\tWeekday Rate : "+weekdayRate+
+                "\tWeekend Rate : "+rewardCustomerWeekendRate+
+                "\tWeekday Rate : "+rewardCustomerWeekdayRate+
                 "\tRatings : "+ratings;
     }
 }
