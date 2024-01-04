@@ -10,10 +10,10 @@ package com.bridgelabz;
 // WeekdayRate  $ |   110         |       150         |       220
 // WeekendRate  $ |   90          |       50          |       150
 
-// Use case 6 :
-// Ability to find the cheapest best rated Hotel for a given Date Range
+// Use case 7 :
+// Ability to find the Best Rated Hotel for a given Date Range
 // - I/P – 11Sep2020, 12Sep2020
-// - O/P – Bridgewood, Rating: 4 and Total Rates: $200
+// - O/P – Ridgewood & Total Rates $370
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,6 +28,7 @@ import java.util.Locale;
 interface Hotel_Requirements{
     String getHotelName();
     String findCheapestHotel(String fromDate,String toDate) throws ParseException;
+    String findBestRatedHotel(String fromDate,String toDate) throws ParseException;
     void setAllHotels(ArrayList<Hotel> allHotels);
     int getRatings(String hotelName);
 }
@@ -147,6 +148,54 @@ class Hotel implements  Hotel_Requirements{
             }else{
                 return "Ridgewood, Rating: "+ridgewoodRatings+" and Total Rates: $"+ridgewoodPrice;
             }
+        }
+    }
+    public String findBestRatedHotel(String fromDate,String toDate) throws ParseException{
+        //Check whether dates are weekend or weekday
+        //if date is weekend --> weekend++ else --> Weekday++
+        //Parse date into day
+        firstDay = getDay(fromDate);
+        lastDay = getDay(toDate);
+        // Store weekdays and weekends
+        int weekendCount=0,weekdayCount=0;
+        if(firstDay == "Saturday" || firstDay == "Sunday") {
+            firstWeekendCount++;
+        } else{
+            firstWeekdayCount++;
+        }
+        if(lastDay == "Monday" || lastDay == "Tuesday" || lastDay == "Wednesday" || lastDay == "Thursday" || lastDay == "Friday") {
+            lastWeekdayCount++;
+        } else{
+            lastWeekendCount++;
+        }
+        //Counting days`
+        totalDays = countDays(fromDate,toDate);
+
+        //Iterate over all hotels and calculate price accordingly
+        for(int i=0; i<allHotels.size();i++){
+            if(allHotels.get(i).hotelName == "Lakewood") {
+                lakewoodPrice = allHotels.get(i).getPrice();
+            } else if (allHotels.get(i).hotelName == "Bridgewood") {
+                bridgewoodPrice = allHotels.get(i).getPrice();
+            } else if(allHotels.get(i).hotelName == "Ridgewood"){
+                ridgewoodPrice = allHotels.get(i).getPrice();
+            }
+            else {
+                System.out.println("Hotel not found");
+            }
+        }
+        lakewoodRatings = getRatings("Lakewood");
+        bridgewoodRatings = getRatings("Bridgewood");
+        ridgewoodRatings = getRatings("Ridgewood");
+        // Ability to find the Best Rated Hotel for a given Date Range
+        // - I/P – 11Sep2020, 12Sep2020
+        // - O/P – Ridgewood & Total Rates $370
+        if(lakewoodRatings > bridgewoodRatings && lakewoodRatings > ridgewoodRatings){
+            return "Lakewood & Total Rates $"+lakewoodPrice;
+        }else if(bridgewoodRatings > lakewoodRatings && bridgewoodRatings > ridgewoodRatings){
+            return "Brigewood & Total Rates $"+bridgewoodPrice;
+        }else{      //Ridgewood have higher ratings as compare to others.
+            return "Ridgewood & Total Rates $"+ridgewoodPrice;
         }
     }
     int getPrice() throws ParseException {
