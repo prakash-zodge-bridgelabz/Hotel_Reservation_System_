@@ -10,11 +10,12 @@ package com.bridgelabz;
 // rewardCustomerWeekdayRate  $ |   80          |       110         |       100
 // rewardCustomerWeekendRate  $ |   80          |       50          |       40
 
-// Use case 9 :
-// Ability to add special rates for reward customers as a part of Loyalty Program
-// - For Lakewood for Reward Customer Weekday & Weekend Rates per day is $80 & $80
-// - For Bridgewood $110 and $50
-// - For Ridgewood $100 and $40
+// Use case 10 :
+// Ability to find the cheapest best rated Hotel for a given Date Range for a Reward Customer
+// - Ability to validate the user inputs for Date Range and customer type
+// - Throw Exceptions for invalid entries
+// - I/P – 11Sep2020, 12Sep2020
+// - O/P – Ridgewood, Rating: 5 and Total Rates: $140
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,12 +29,17 @@ import java.util.Locale;
 
 interface Hotel_Requirements{
     String getHotelName();
-    String findCheapestHotel(String fromDate,String toDate) throws ParseException;
+    String findCheapestBestRatedHotelForRewardCustomer(String fromDate,String toDate) throws ParseException, HotelNotFoundException;
     String findBestRatedHotel(String fromDate,String toDate) throws ParseException;
     void setAllHotels(ArrayList<Hotel> allHotels);
     int getRatings(String hotelName);
     void setSpecialRatesForRewardCustomer(String hotelName,int rewardCustomerWeekdayRate,int rewardCustomerWeekendRate);
     String getSpecialRatesForRewardCustomer(String hotelName);
+}
+class HotelNotFoundException extends Exception{
+    HotelNotFoundException(String errorMsg){
+        super(errorMsg);
+    }
 }
 class Hotel implements  Hotel_Requirements{
     String hotelName;
@@ -100,7 +106,7 @@ class Hotel implements  Hotel_Requirements{
     }
     static int firstWeekendCount=0,lastWeekendCount=0,firstWeekdayCount=0,lastWeekdayCount=0;
     int price,lakewoodPrice,lakewoodRatings,bridgewoodPrice,bridgewoodRatings,ridgewoodPrice,ridgewoodRatings;
-    public String findCheapestHotel(String fromDate,String toDate) throws ParseException {
+    public String findCheapestBestRatedHotelForRewardCustomer(String fromDate,String toDate) throws ParseException, HotelNotFoundException {
         //Check whether dates are weekend or weekday
         //if date is weekend --> weekend++ else --> Weekday++
         //Parse date into day
@@ -120,7 +126,6 @@ class Hotel implements  Hotel_Requirements{
         }
         //Counting days`
         totalDays = countDays(fromDate,toDate);
-
         //Iterate over all hotels and calculate price accordingly
         for(int i=0; i<allHotels.size();i++){
             if(allHotels.get(i).hotelName == "Lakewood") {
@@ -130,8 +135,8 @@ class Hotel implements  Hotel_Requirements{
             } else if(allHotels.get(i).hotelName == "Ridgewood"){
                 ridgewoodPrice = allHotels.get(i).getPrice();
             }
-            else {
-                System.out.println("Hotel not found");
+            else {  // Check whether hotel name is present or not if not throw custom exception
+                throw new HotelNotFoundException("Exception : Hotel not found");
             }
         }
         lakewoodRatings = getRatings("Lakewood");

@@ -13,36 +13,25 @@ public class Hotel_Reservation_Test {
     @Before
     public void init(){
         allHotels= new ArrayList<>();       //For storing all hotels
-        Lakewood = new Hotel("Lakewood",110,90,3);
-        Bridgewood = new Hotel("Bridgewood",150,50,4);
-        Ridgewood = new Hotel("Ridgewood",220,150,5);
+        Lakewood = new Hotel("Lakewood",80,80,3);
+        Bridgewood = new Hotel("Bridgewood",110,50,4);
+        Ridgewood = new Hotel("Ridgewood",100,40,5);
         allHotels.add(Lakewood);
         allHotels.add(Bridgewood);
         allHotels.add(Ridgewood);
         h = new Hotel();
         h.setAllHotels(allHotels);
     }
-    // Use case 9, test case:
-    // Ability to add special rates for reward customers as a part of Loyalty Program
-    // - For Lakewood for Reward Customer Weekday & Weekend Rates per day is $80 & $80
-    // - For Bridgewood $110 and $50
-    // - For Ridgewood $100 and $40
+    // Use case 10, test case :
+    // Ability to find the cheapest best rated Hotel for a given Date Range for a Reward Customer
+    // - Ability to validate the user inputs for Date Range and customer type
+    // - Throw Exceptions for invalid entries
+    // - I/P – 11Sep2020, 12Sep2020
+    // - O/P – Ridgewood, Rating: 5 and Total Rates: $140
     @Test
-    public void test_useCase9_setSpecialRatesForRewardCustomer() throws ParseException{
-        h.setSpecialRatesForRewardCustomer("Lakewood",80,80);
-        h.setSpecialRatesForRewardCustomer("Bridgewood",110,50);
-        h.setSpecialRatesForRewardCustomer("Ridgewood",100,40);
-
-        String lakewoodActual = h.getSpecialRatesForRewardCustomer("Lakewood");
-        String lakewoodExpected = "For Lakewood reward customer weekday rate is : $80 and reward customer weekend rate is : $80";
-        Assert.assertEquals(lakewoodExpected,lakewoodActual);
-
-        String bridgewoodActual = h.getSpecialRatesForRewardCustomer("Bridgewood");
-        String bridgewoodExpected = "For Bridgewood reward customer weekday rate is : $110 and reward customer weekend rate is : $50";
-        Assert.assertEquals(bridgewoodExpected,bridgewoodActual);
-
-        String ridgewoodActual = h.getSpecialRatesForRewardCustomer("Ridgewood");
-        String ridgewoodExpected = "For Ridgewood reward customer weekday rate is : $100 and reward customer weekend rate is : $40";
-        Assert.assertEquals(ridgewoodExpected,ridgewoodActual);
+    public void test_useCase10_findCheapestBestRatedHotelForRewardCustomer() throws ParseException, HotelNotFoundException {
+        String actual = h.findCheapestBestRatedHotelForRewardCustomer("11sep2020","12sep2020");
+        String expected = "Ridgewood, Rating: 5 and Total Rates: $140";
+        Assert.assertEquals(expected,actual);
     }
 }
