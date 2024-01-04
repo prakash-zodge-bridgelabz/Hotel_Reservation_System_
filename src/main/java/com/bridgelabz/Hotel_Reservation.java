@@ -4,36 +4,16 @@ package com.bridgelabz;
 // HOTEL RESERVATION SYSTEM
 // Rates --> Weekday
 // Rates --> Weekend (Saturday, Sunday)
-//                                                   3 HOTEL's
-// Concepts                     | Lakewood      |   Bridgelwood     |   Ridgewood
-// Ratings                      |   3           |       4           |       5
-// RegularCustomerWeekdayRate $ |   110         |       160         |       220
-// RewardCustomerWeekdayRate  $ |   80          |       110         |       100
-// RegularCustomerWeekendRate $ |   90          |       60          |       150
-// RewardCustomerWeekendRate  $ |   80          |       50          |       40
+//                                     3 HOTEL's
+// Concepts       | Lakewood      |   Bridgelwood     |   Ridgewood
+// Ratings        |   3           |       4           |       5
+// WeekdayRate  $ |   110         |       150         |       220
+// WeekendRate  $ |   90          |       50          |       150
 
-// Use case 1 :
-// Ability to add Hotel in a Hotel Reservation System with Name and rates for Regular Customer…
-
-// Use case 2 : (Add weekday only)
-// Ability to find the cheapest Hotel for a given Date Range
-// - I/P – 10Sep2020, 11Sep2020
-// - O/P – Lakewood, Total Rates: $220
-
-// Use case 3 :
-// Ability to add weekday and weekend rates for each Hotel
-// - For Lakewood Weekday & Weekend Rates per day is $110 & $90
-// - For Bridgewood $150 and $50
-// - For Ridgewood $220 and $150
-
-// Use case 4 :
-// Ability to find the cheapest Hotel for a given Date Range based on weekday and weekend
+// Use case 6 :
+// Ability to find the cheapest best rated Hotel for a given Date Range
 // - I/P – 11Sep2020, 12Sep2020
-// - O/P – Lakewood and Bridgewood with Total Rates $200
-
-// Use case 5 :
-// Ability to add ratings to each Hotel
-// - Lakewood is 3, Bridgewood is 4 and Ridgewood is 5
+// - O/P – Bridgewood, Rating: 4 and Total Rates: $200
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -45,20 +25,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-
 interface Hotel_Requirements{
     String getHotelName();
-    int getRegularRatesForCustomer();
-    int getTotalHotelsCreated();
     String findCheapestHotel(String fromDate,String toDate) throws ParseException;
     void setAllHotels(ArrayList<Hotel> allHotels);
-    void setWeekdayAndWeekendRate(String hotelName,int weekdayRate, int weekendRate);
-    void setRatings(String hotelName, int ratings);
     int getRatings(String hotelName);
 }
 class Hotel implements  Hotel_Requirements{
     String hotelName;
-    int regularRatesForCustomer, weekendRate, weekdayRate;
     static ArrayList<Hotel> allHotels= new ArrayList<>();       //For storing all hotels
     public void setAllHotels(ArrayList<Hotel> allHotels){
         this.allHotels = allHotels;
@@ -69,30 +43,12 @@ class Hotel implements  Hotel_Requirements{
     Hotel(){
         //For calling setAllHotels method
     }
-    static int totalHotelsCreated;      //Static count will be same for every hotels been created
-    Hotel(String hotelName,int regularRatesForCustomer){
+    int ratings,weekendRate, weekdayRate;
+    Hotel(String hotelName, int weekdayRate, int weekendRate, int ratings){
         this.hotelName = hotelName;
-        this.regularRatesForCustomer = regularRatesForCustomer;
-        totalHotelsCreated++;
-    }
-
-    public void setWeekdayAndWeekendRate(String hotelName,int weekdayRate, int weekendRate){
-        // Iterate over the ArrayList and set the value of the element with the name "element2" to "new value"
-        for (int i = 0; i < allHotels.size(); i++) {
-            if (allHotels.get(i).hotelName.equals(hotelName)) {
-                allHotels.get(i).weekdayRate = weekdayRate;
-                allHotels.get(i).weekendRate = weekendRate;
-            }
-        }
-    }
-    int ratings;
-    public void setRatings(String hotelName, int ratings){
-        // Iterate over the ArrayList and set the value of the element with the name "element2" to "new value"
-        for (int i = 0; i < allHotels.size(); i++) {
-            if (allHotels.get(i).hotelName.equals(hotelName)) {
-                allHotels.get(i).ratings = ratings;
-            }
-        }
+        this.weekdayRate = weekdayRate;
+        this.weekendRate = weekendRate;
+        this.ratings = ratings;
     }
     int res=0;
     public int getRatings(String hotelName){
@@ -104,10 +60,9 @@ class Hotel implements  Hotel_Requirements{
         return res;
     }
     public String getHotelName()            {   return hotelName;               }
-    public int getRegularRatesForCustomer() {   return regularRatesForCustomer; }
-    public int getTotalHotelsCreated()      {   return totalHotelsCreated;      }
     static long totalDays;
-    String firstDay,lastDay,day;
+    static String firstDay,lastDay;
+    String day;
     String getDay(String strDate)throws ParseException {
         try {
             String inputDate = strDate.replace("sep","sept");     //Throws error --> if we provide "sep" so replaced with "sept"
@@ -121,26 +76,28 @@ class Hotel implements  Hotel_Requirements{
         return day;
     }
     static int firstWeekendCount=0,lastWeekendCount=0,firstWeekdayCount=0,lastWeekdayCount=0;
-    int price,lakewoodPrice,bridgewoodPrice,ridgewoodPrice;
+    int price,lakewoodPrice,lakewoodRatings,bridgewoodPrice,bridgewoodRatings,ridgewoodPrice,ridgewoodRatings;
     public String findCheapestHotel(String fromDate,String toDate) throws ParseException {
         //Check whether dates are weekend or weekday
-        //if date is weekend --> weekend++
-        //else --> Weekday++
+        //if date is weekend --> weekend++ else --> Weekday++
         //Parse date into day
-        firstDay = getDay(fromDate);       //call getDay and pass one date
+        firstDay = getDay(fromDate);
         lastDay = getDay(toDate);
+//        // Store weekdays and weekends
+        int weekendCount=0,weekdayCount=0;
         if(firstDay == "Saturday" || firstDay == "Sunday") {
             firstWeekendCount++;
         } else{
             firstWeekdayCount++;
         }
-        if(lastDay == "Saturday" || lastDay == "Sunday") {
-            lastWeekendCount++;
-        } else{
+        if(lastDay == "Monday" || lastDay == "Tuesday" || lastDay == "Wednesday" || lastDay == "Thursday" || lastDay == "Friday") {
             lastWeekdayCount++;
+        } else{
+            lastWeekendCount++;
         }
         //Counting days`
         totalDays = countDays(fromDate,toDate);
+
         //Iterate over all hotels and calculate price accordingly
         for(int i=0; i<allHotels.size();i++){
             if(allHotels.get(i).hotelName == "Lakewood") {
@@ -154,7 +111,12 @@ class Hotel implements  Hotel_Requirements{
                 System.out.println("Hotel not found");
             }
         }
-        //Finding cheapest hotel
+        lakewoodRatings = getRatings("Lakewood");
+        bridgewoodRatings = getRatings("Bridgewood");
+        ridgewoodRatings = getRatings("Ridgewood");
+        // Ability to find the cheapest best rated Hotel for a given Date Range
+        // - I/P – 11Sep2020, 12Sep2020
+        // - O/P – Bridgewood, Rating: 4 and Total Rates: $200
         if(lakewoodPrice < bridgewoodPrice && lakewoodPrice < ridgewoodPrice){
             return "Lakewood, Total Rates: $"+lakewoodPrice;
         }
@@ -165,31 +127,40 @@ class Hotel implements  Hotel_Requirements{
             return "Ridgewood, Total Rates: $"+ridgewoodPrice;
         }
         else if(lakewoodPrice == bridgewoodPrice){
-            return "Lakewood and Bridgewood with Total Rates: $"+lakewoodPrice;
+            // Now check ratings, according to higher ratings hotel details will be returned
+            if(lakewoodRatings > bridgewoodRatings){
+                return "Lakewood, Rating: "+lakewoodRatings+" and Total Rates: $"+lakewoodPrice;
+            }else{
+                return "Bridgewood, Rating: "+bridgewoodRatings+" and Total Rates: $"+bridgewoodPrice;
+            }
         }
         else if(bridgewoodPrice == ridgewoodPrice) {
-            return "Bridgewood and Ridgewood with Total Rates: $"+bridgewoodPrice;
+            if(bridgewoodRatings > ridgewoodRatings){
+                return "Bridgewood, Rating: "+bridgewoodRatings+" and Total Rates: $"+bridgewoodPrice;
+            }else{
+                return "Ridgewood, Rating: "+ridgewoodRatings+" and Total Rates: $"+ridgewoodPrice;
+            }
         }
         else{       // lakewoodPrice == ridgewoodPrice
-            return "Lakewood and Ridgewood with Total Rates: $"+lakewoodPrice;
+            if(lakewoodRatings > ridgewoodRatings){
+                return "Lakewood, Rating: "+lakewoodRatings+" and Total Rates: $"+lakewoodPrice;
+            }else{
+                return "Ridgewood, Rating: "+ridgewoodRatings+" and Total Rates: $"+ridgewoodPrice;
+            }
         }
     }
-    int getPrice() throws ParseException {  //
-        if(totalDays <= 0){
-            // do nothing
-        } else{        //firstWeekdayCount      firstWeekendCount      lastWeekdayCount    lastWeekendCount
-            if(firstWeekdayCount >= 1){  //weekendRate   weekDayRate
-                price += weekdayRate * firstWeekdayCount;
-            }
-            if(firstWeekendCount >= 1){
-                price += weekendRate * firstWeekendCount;
-            }
-            if(lastWeekdayCount >= 1){
-                price += weekdayRate * lastWeekdayCount;
-            }
-            if(lastWeekendCount >= 1){
-                price += weekendRate * lastWeekendCount;
-            }
+    int getPrice() throws ParseException {
+        if(firstWeekdayCount >= 1){
+            price += weekdayRate * firstWeekdayCount;
+        }
+        if(firstWeekendCount >= 1){
+            price += weekendRate * firstWeekendCount;
+        }
+        if(lastWeekdayCount >= 1){
+            price += weekdayRate * lastWeekdayCount;
+        }
+        if(lastWeekendCount >= 1){
+            price += weekendRate * lastWeekendCount;
         }
         return price;
     }
@@ -204,10 +175,6 @@ class Hotel implements  Hotel_Requirements{
         return daysBetween+1;
     }
     @Override
-//    public String toString() {
-//        return "Hotel Name : "+hotelName+
-//                "\nRegular Rates for Customer : ";
-//    }
     public String toString() {
         return "Hotel Name : "+hotelName+
                 "\tWeekend Rate : "+weekendRate+
