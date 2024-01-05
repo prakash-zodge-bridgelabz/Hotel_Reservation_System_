@@ -22,10 +22,9 @@ public class Hotel_Reservation_Test {
         h = new Hotel();
         h.setAllHotels(allHotels);
     }
-    // Use case 10, test case :
-    // Ability to find the cheapest best rated Hotel for a given Date Range for a Reward Customer
-    // - Ability to validate the user inputs for Date Range and customer type
-    // - Throw Exceptions for invalid entries
+    // Use case 11, test case :
+    // Ability to find the cheapest best rated Hotel for a given Date Range for a Reward Customer using Java Streams
+    // - Use Regex Validation, Exceptions and Java 8 Date Feature
     // - I/P – 11Sep2020, 12Sep2020
     // - O/P – Ridgewood, Rating: 5 and Total Rates: $140
     @Test

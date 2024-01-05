@@ -10,10 +10,9 @@ package com.bridgelabz;
 // rewardCustomerWeekdayRate  $ |   80          |       110         |       100
 // rewardCustomerWeekendRate  $ |   80          |       50          |       40
 
-// Use case 10 :
-// Ability to find the cheapest best rated Hotel for a given Date Range for a Reward Customer
-// - Ability to validate the user inputs for Date Range and customer type
-// - Throw Exceptions for invalid entries
+// Use case 11 :
+// Ability to find the cheapest best rated Hotel for a given Date Range for a Reward Customer using Java Streams
+// - Use Regex Validation, Exceptions and Java 8 Date Feature
 // - I/P – 11Sep2020, 12Sep2020
 // - O/P – Ridgewood, Rating: 5 and Total Rates: $140
 
@@ -25,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 interface Hotel_Requirements{
@@ -106,6 +106,21 @@ class Hotel implements  Hotel_Requirements{
     }
     static int firstWeekendCount=0,lastWeekendCount=0,firstWeekdayCount=0,lastWeekdayCount=0;
     int price,lakewoodPrice,lakewoodRatings,bridgewoodPrice,bridgewoodRatings,ridgewoodPrice,ridgewoodRatings;
+    // Ability to find the cheapest best rated Hotel for a given Date Range for a Reward Customer using Java Streams
+    int findHotelPrice(List<Hotel> allHotels, String hotelName) {
+        Integer i = allHotels.stream()
+                .filter(hotel -> hotel.getHotelName().equals(hotelName))
+                .findFirst()
+                .map(hotel1 -> {
+                    try {
+                        return hotel1.getPrice();
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .orElse(0);
+        return i;
+    }
     public String findCheapestBestRatedHotelForRewardCustomer(String fromDate,String toDate) throws ParseException, HotelNotFoundException {
         //Check whether dates are weekend or weekday
         //if date is weekend --> weekend++ else --> Weekday++
@@ -127,18 +142,13 @@ class Hotel implements  Hotel_Requirements{
         //Counting days`
         totalDays = countDays(fromDate,toDate);
         //Iterate over all hotels and calculate price accordingly
-        for(int i=0; i<allHotels.size();i++){
-            if(allHotels.get(i).hotelName == "Lakewood") {
-                lakewoodPrice = allHotels.get(i).getPrice();
-            } else if (allHotels.get(i).hotelName == "Bridgewood") {
-                bridgewoodPrice = allHotels.get(i).getPrice();
-            } else if(allHotels.get(i).hotelName == "Ridgewood"){
-                ridgewoodPrice = allHotels.get(i).getPrice();
-            }
-            else {  // Check whether hotel name is present or not if not throw custom exception
-                throw new HotelNotFoundException("Exception : Hotel not found");
-            }
-        }
+
+        lakewoodPrice = findHotelPrice(allHotels,"Lakewood");
+        bridgewoodPrice = findHotelPrice(allHotels,"Bridgewood");
+        ridgewoodPrice = findHotelPrice(allHotels,"Ridgewood");
+        System.out.println("Lakewood Price : "+lakewoodPrice+
+                "Bridgewood price : "+bridgewoodPrice+
+                "Ridgewood price : "+ridgewoodPrice);
         lakewoodRatings = getRatings("Lakewood");
         bridgewoodRatings = getRatings("Bridgewood");
         ridgewoodRatings = getRatings("Ridgewood");
@@ -146,13 +156,13 @@ class Hotel implements  Hotel_Requirements{
         // - I/P – 11Sep2020, 12Sep2020
         // - O/P – Bridgewood, Rating: 4 and Total Rates: $200
         if(lakewoodPrice < bridgewoodPrice && lakewoodPrice < ridgewoodPrice){
-            return "Lakewood, Total Rates: $"+lakewoodPrice;
+            return "Lakewood, Rating: "+lakewoodRatings+" and Total Rates: $"+lakewoodPrice;
         }
         else if(bridgewoodPrice < lakewoodPrice && bridgewoodPrice < ridgewoodPrice){
-            return "Bridgewood, Total Rates: $"+bridgewoodPrice;
+            return "Bridgewood, Rating: "+bridgewoodRatings+" and Total Rates: $"+bridgewoodPrice;
         }
         else if(ridgewoodPrice < lakewoodPrice && ridgewoodPrice < bridgewoodPrice){
-            return "Ridgewood, Total Rates: $"+ridgewoodPrice;
+            return "Ridgewood, Rating: "+ridgewoodRatings+" and Total Rates: $"+ridgewoodPrice;
         }
         else if(lakewoodPrice == bridgewoodPrice){
             // Now check ratings, according to higher ratings hotel details will be returned
