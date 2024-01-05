@@ -21,16 +21,20 @@ public class Hotel_Reservation_Test {
         allHotels.add(Ridgewood);
         h = new Hotel();
         h.setAllHotels(allHotels);
+        h.setSpecialRatesForRegularCustomer("Lakewood",110,90);
+        h.setSpecialRatesForRegularCustomer("Bridgewood",160,60);
+        h.setSpecialRatesForRegularCustomer("Ridgewood",120,150);
     }
-    // Use case 11, test case :
-    // Ability to find the cheapest best rated Hotel for a given Date Range for a Reward Customer using Java Streams
+    // Use case 12, test case :
+    // Ability to find the cheapest best rated Hotel for a given Date range for a Regular Customer
+    // using Java Streams
     // - Use Regex Validation, Exceptions and Java 8 Date Feature
     // - I/P – 11Sep2020, 12Sep2020
-    // - O/P – Ridgewood, Rating: 5 and Total Rates: $140
+    // - O/P – Bridgewood, Rating: 4 and Total Rates: $200
     @Test
-    public void test_useCase10_findCheapestBestRatedHotelForRewardCustomer() throws ParseException, HotelNotFoundException {
-        String actual = h.findCheapestBestRatedHotelForRewardCustomer("11sep2020","12sep2020");
-        String expected = "Ridgewood, Rating: 5 and Total Rates: $140";
+    public void test_useCase10_findCheapestBestRatedHotelForRegularCustomer() throws ParseException, HotelNotFoundException {
+        String actual = h.findCheapestBestRatedHotelForRegularCustomer("11sep2020","12sep2020");
+        String expected = "Bridgewood, Rating: 4 and Total Rates: $200";
         Assert.assertEquals(expected,actual);
     }
 }
